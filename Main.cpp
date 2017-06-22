@@ -8,7 +8,11 @@ COORD charBufSize;
 COORD characterPos;
 SMALL_RECT writeArea;
 CHAR_INFO Key[100], Introduce[3600], Audi;
-int bm[3605], Kt[100], txt[36][100], Mang=5, Score=0, dh[4]={24, 26, 25, 27};
+int bm[3605], Kt[100], txt[36][100], Mang=5, Score=0, dh[5]={88, 24, 26, 25, 27};
+typedef struct{
+	string s;
+	int score;
+} Sc;
 
 void resizeConsoleByPixel(int width, int height){	HWND console = GetConsoleWindow();	RECT r;	GetWindowRect(console, &r);	MoveWindow(console, r.left, r.top, width, height, TRUE); }
 void resizeConsole(int width, int height){	SMALL_RECT windowSize = {0, 0, width, height};	SetConsoleWindowInfo(hConsoleOutput, true, &windowSize); }
@@ -114,7 +118,7 @@ void PlayGame()
 	writeArea = {0, 1, 99, 1};
 	for(int i=0;i<100;i++){
 		Kt[i]=rand()%3+1;
-		Key[i].Char.AsciiChar = dh[Kt[i]-1];
+		Key[i].Char.AsciiChar = dh[Kt[i]];
 	}
 
 	WriteConsoleOutputA(hConsoleOutput, Key, charBufSize, characterPos, &writeArea);
@@ -124,7 +128,8 @@ void PlayGame()
 	for(int i=0;i<100;i++)
 	{
 		int k = GetKeyButton();
-		Audi.Char.AsciiChar = dh[k-1];
+		if(k==-1) return;
+		Audi.Char.AsciiChar = dh[k];
 		if(k==Kt[i])
 		{
 			Audi.Attributes = 10;
@@ -148,10 +153,15 @@ void PlayGame()
 
 void GhiDiem()
 {
-	
+	system("cls");
+	SetConsoleTextAttribute(hConsoleOutput, 44);
+	for(int i=0;i<46;i++) printf(" ");
+	printf("Audition");
+	for(int i=0;i<46;i++) printf(" ");
+	Sc scoreboard[100];
 }
 
-void StartGame()
+void Single()
 {
 	system("cls");
 	for(int i=0;i<100;i++) printf(" ");
@@ -171,11 +181,59 @@ void StartGame()
 	GhiDiem();
 }
 
-void AboutMe()
+void Multi()
 {
 	system("cls");
-	system("color AC");
-	printf("AboutMe");
+	printf("Multi");
+}
+
+void StartGame()
+{
+	system("cls");
+	SetConsoleTextAttribute(hConsoleOutput, 10);
+	gotoxy(36, 20); printf("   M u l t i   P l a y e r s");
+	SetConsoleTextAttribute(hConsoleOutput, 14);
+	gotoxy(36, 15); printf(">  S i n g l e   P l a y e r");
+	int kk, __y=0;
+	while(1)
+	{
+		int kk = GetKeyButton();
+		if(kk==1 || kk==3) __y=1-__y;
+		else if(kk==5) break;
+		else if(kk==-1) return;
+		if(__y==1){
+			SetConsoleTextAttribute(hConsoleOutput, 10);
+			gotoxy(36, 15); printf("   S i n g l e   P l a y e r");
+			SetConsoleTextAttribute(hConsoleOutput, 14);
+			gotoxy(36, 20); printf(">  M u l t i   P l a y e r s");
+		}
+		else{
+			SetConsoleTextAttribute(hConsoleOutput, 10);
+			gotoxy(36, 20); printf("   M u l t i   P l a y e r s");
+			SetConsoleTextAttribute(hConsoleOutput, 14);
+			gotoxy(36, 15); printf(">  S i n g l e   P l a y e r");
+		}
+
+	}
+	if(kk==-1) return;
+	if(__y==0) Single();
+	else Multi();
+}
+
+void AboutMe()
+{
+	SetConsoleTextAttribute(hConsoleOutput, 44);
+	system("cls");
+	printf("\n");
+	for(int i=0;i<46;i++) printf(" ");
+	printf("Audition");
+	for(int i=0;i<46;i++) printf(" ");
+	int k=0;
+	while(true)
+	{
+		k = GetKeyButton();
+		if(k==-1) break;
+	}
 }
 
 void GoTo(int _yCursor)
@@ -264,6 +322,7 @@ void BatDau()
 		else if(k==5)	break;
 	}
 	GoTo( _yCursor);
+	BatDau();
 }
 
 int main()
