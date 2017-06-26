@@ -8,7 +8,9 @@ COORD charBufSize;
 COORD characterPos;
 SMALL_RECT writeArea;
 CHAR_INFO Key[100], Introduce[3600], Audi;
-int bm[3605], Kt[100], txt[36][100], Mang=5, Score=0, dh[5]={88, 24, 26, 25, 27};
+int bm[3605], Kt[100], txt[36][100], Mang=5, dh[5]={88, 24, 26, 25, 27}, Combo;
+int Cb[5]={67, 79, 77, 66, 79};
+long long Score;
 typedef struct{
 	string s;
 	int score;
@@ -120,11 +122,20 @@ void PlayGame()
 		Kt[i]=rand()%3+1;
 		Key[i].Char.AsciiChar = dh[Kt[i]];
 	}
-
 	WriteConsoleOutputA(hConsoleOutput, Key, charBufSize, characterPos, &writeArea);
+
+	CHAR_INFO line3[100];
+	for(int i=0;i<100;i++)
+	{
+		line3[i].Char.AsciiChar = ' ';
+		line3[i].Attributes = bm[i+200]/16*16;
+	}
+	charBufSize = {100, 1};
+	characterPos = {0, 0};
+	writeArea = {0, 2, 99, 2};
+	WriteConsoleOutputA(hConsoleOutput, line3, charBufSize, characterPos, &writeArea);
 	charBufSize = {1, 1};
 	characterPos = {0, 0};
-	gotoxy(1, 3); for(int i=0;i<100;i++) printf(" "); 
 	for(int i=0;i<100;i++)
 	{
 		int k = GetKeyButton();
@@ -132,18 +143,21 @@ void PlayGame()
 		Audi.Char.AsciiChar = dh[k];
 		if(k==Kt[i])
 		{
-			Audi.Attributes = 10;
-			Score++;
-			SetConsoleTextAttribute(hConsoleOutput, 10);
-			gotoxy(96, 1);	printf("%5d", Score);
+			Audi.Attributes = 10+bm[i+200]/16*16;
+			Combo++;
+			Score+=Combo;
+			SetConsoleTextAttribute(hConsoleOutput, 10+bm[96]/16*16);
+			gotoxy(91, 1);	printf("%10lld", Score);
 		}
 		else
 		{
-			Audi.Attributes = 12;
+			Audi.Attributes = 12+bm[i+200]/16*16;
 			gotoxy(Mang, 1); printf(" "); gotoxy(i+2, 3);
+			Combo=0;
 			Mang--;
 			if(Mang==0) break;
 		}
+		gotoxy(51, 1);	printf("%5d", Combo);
 		writeArea = {i, 2, i, 2};
 		WriteConsoleOutputA(hConsoleOutput, &Audi, charBufSize, characterPos, &writeArea);
 	}
@@ -164,8 +178,7 @@ void GhiDiem()
 void Single()
 {
 	system("cls");
-	for(int i=0;i<100;i++) printf(" ");
-	SetConsoleTextAttribute(hConsoleOutput, 12);
+	Intranh("Castle.txt",0);
 	charBufSize = {5, 1};
 	characterPos = {0, 0};
 	writeArea = {0, 0, 4, 0};
@@ -173,10 +186,17 @@ void Single()
 	for(int i=0;i<5;i++)
 	{
 		Heart[i].Char.AsciiChar = 3;
-		Heart[i].Attributes = 12;
+		Heart[i].Attributes = 16*(bm[i]/16)+12;
 	}
 	WriteConsoleOutputA(hConsoleOutput, Heart, charBufSize, characterPos, &writeArea);
-	for(int i=0;i<100;i++)	Key[i].Attributes = 12;
+	for(int i=0;i<5;i++)
+	{
+		Heart[i].Char.AsciiChar = Cb[i];
+		Heart[i].Attributes = 16*(bm[i]/16)+10;
+	}
+	writeArea = {45, 0, 49, 0};
+	WriteConsoleOutputA(hConsoleOutput, Heart, charBufSize, characterPos, &writeArea);
+	for(int i=0;i<100;i++)	Key[i].Attributes = bm[i+100]/16*16+15;
 	PlayGame();
 	GhiDiem();
 }
