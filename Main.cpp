@@ -11,6 +11,10 @@ CHAR_INFO Key[100], Introduce[3600], Audi;
 int bm[3605], Kt[100], txt[36][100], Mang=5, dh[5]={88, 24, 26, 25, 27}, Combo;
 int Cb[5]={67, 79, 77, 66, 79};
 long long Score;
+const char* Color[3]={"Black", "Blue", "Green"};
+const char* Picture[9]= {"The Castle", "Two Mountain", "Super Mario", "Infinity Random", "Super Star", "ì Universe", "Hatsune Miku", "Vietnamese", "Gold Phoenix"};
+const char* Bitmap[9]={"Castle.txt", "Mountain.txt", "SuperMario.txt", "Infinity.txt", "Star.txt", "Universe.txt", "Miku.txt", "Vietnam.txt", "Phoenix.txt"};
+const char* Thumbnail[9]={"Castle.tbn", "Mountain.tbn", "SuperMario.tbn", "Infinity.tbn", "Star.tbn", "Universe.tbn", "Miku.tbn", "Vietnam.tbn", "Phoenix.tbn"};
 typedef struct{
 	string s;
 	int score;
@@ -36,6 +40,10 @@ int GetKeyButton()
 		}
 		if(c==13) return 5;
 		else if(c==27) return -1;
+		else if(c==87) return 6;
+		else if(c==68) return 7;
+		else if(c==83) return 8;
+		else if(c==65) return 9;
 		else return 0;
 }
 
@@ -119,7 +127,7 @@ void PlayGame()
 	characterPos = {0, 0};
 	writeArea = {0, 1, 99, 1};
 	for(int i=0;i<100;i++){
-		Kt[i]=rand()%3+1;
+		Kt[i]=rand()%4+1;
 		Key[i].Char.AsciiChar = dh[Kt[i]];
 	}
 	WriteConsoleOutputA(hConsoleOutput, Key, charBufSize, characterPos, &writeArea);
@@ -177,11 +185,10 @@ void GhiDiem()
 
 void Single()
 {
-	system("cls");
-	Intranh("Castle.txt",0);
 	charBufSize = {5, 1};
 	characterPos = {0, 0};
 	writeArea = {0, 0, 4, 0};
+	Mang=5, Score=0;
 	CHAR_INFO Heart[5];
 	for(int i=0;i<5;i++)
 	{
@@ -197,14 +204,147 @@ void Single()
 	writeArea = {45, 0, 49, 0};
 	WriteConsoleOutputA(hConsoleOutput, Heart, charBufSize, characterPos, &writeArea);
 	for(int i=0;i<100;i++)	Key[i].Attributes = bm[i+100]/16*16+15;
+	SetConsoleTextAttribute(hConsoleOutput, bm[0]/16*16+12);
 	PlayGame();
 	GhiDiem();
 }
 
+void PlayMulti()
+{
+	system("color 3B");
+	system("cls");
+	CHAR_INFO MangMau;
+	MangMau.Char.AsciiChar = 3;
+	charBufSize = {1,1};
+	characterPos = {0, 0};
+	for(int i=0;i<48;i++)
+	{
+		MangMau.Attributes = 16*(bm[i]/16+12)+12;
+		writeArea = {i, 0, i, 0};
+		WriteConsoleOutputA(hConsoleOutput, &MangMau, charBufSize, characterPos, &writeArea);
+	}
+	int k = GetKeyButton();
+}
+
+void ChooseColor()
+{
+	system("color E");
+	system("cls");
+	gotoxy(46, 1); printf("%c%c%c%c%c%c%c%c%c%c%c%c%c%c", 201, 205, 205, 205, 205, 205, 205, 205, 205, 205, 205, 205, 205, 187);
+	gotoxy(46, 2); printf("%c List Color %c", 186, 186);
+	gotoxy(46, 3); printf("%c%c%c%c%c%c%c%c%c%c%c%c%c%c", 200, 205, 205, 205, 205, 205, 205, 205, 205, 205, 205, 205, 205, 188);
+	for(int i=0;i<3;i++)
+	{
+		gotoxy(10, i*2+5);
+		printf(Color[i]);
+	}
+	int k, _y=0;
+	SetConsoleTextAttribute(hConsoleOutput, 10);
+	gotoxy(7, _y*2+5); printf(">  ");
+	gotoxy(10, _y*2+5);	printf(Color[_y]);
+	while(true)
+	{
+		k = GetKeyButton();
+		if(k==-1) return;
+		else if(k==5) break;
+		else if(k==1)
+		{
+			SetConsoleTextAttribute(hConsoleOutput, 14);
+			gotoxy(7, _y*2+5); printf("   ");
+			gotoxy(10, _y*2+5);	printf(Color[_y]);	
+			_y=(_y+8)%9;
+			SetConsoleTextAttribute(hConsoleOutput, 10);
+			gotoxy(7, _y*2+5); printf(">  ");
+			gotoxy(10, _y*2+5);	printf(Color[_y]);
+		}
+		else if(k==3)
+		{
+			SetConsoleTextAttribute(hConsoleOutput, 14);
+			gotoxy(7, _y*2+5); printf("   ");
+			gotoxy(10, _y*2+5);	printf(Color[_y]);
+			_y=(_y+1)%9;
+			SetConsoleTextAttribute(hConsoleOutput, 10);
+			gotoxy(7, _y*2+5); printf(">  ");
+			gotoxy(10, _y*2+5);	printf(Color[_y]);
+		}
+	}
+	system("cls");
+	Intranh(Bitmap[_y], 0);
+}
+
+void ChoosePicture()
+{
+	system("color E");
+	system("cls");
+	gotoxy(46, 1); printf("%c%c%c%c%c%c%c%c%c%c%c%c%c%c", 201, 205, 205, 205, 205, 205, 205, 205, 205, 205, 205, 205, 205, 187);
+	gotoxy(46, 2); printf("%c List Theme %c", 186, 186);
+	gotoxy(46, 3); printf("%c%c%c%c%c%c%c%c%c%c%c%c%c%c", 200, 205, 205, 205, 205, 205, 205, 205, 205, 205, 205, 205, 205, 188);
+	for(int i=0;i<9;i++)
+	{
+		gotoxy(10, i*2+5);
+		printf(Picture[i]);
+	}
+	int k, _y=0;
+	SetConsoleTextAttribute(hConsoleOutput, 10);
+	gotoxy(7, _y*2+5); printf(">  ");
+	gotoxy(10, _y*2+5);	printf(Picture[_y]);
+	while(true)
+	{
+		k = GetKeyButton();
+		if(k==-1) return;
+		else if(k==5) break;
+		else if(k==1)
+		{
+			SetConsoleTextAttribute(hConsoleOutput, 14);
+			gotoxy(7, _y*2+5); printf("   ");
+			gotoxy(10, _y*2+5);	printf(Picture[_y]);	
+			_y=(_y+8)%9;
+			SetConsoleTextAttribute(hConsoleOutput, 10);
+			gotoxy(7, _y*2+5); printf(">  ");
+			gotoxy(10, _y*2+5);	printf(Picture[_y]);
+		}
+		else if(k==3)
+		{
+			SetConsoleTextAttribute(hConsoleOutput, 14);
+			gotoxy(7, _y*2+5); printf("   ");
+			gotoxy(10, _y*2+5);	printf(Picture[_y]);
+			_y=(_y+1)%9;
+			SetConsoleTextAttribute(hConsoleOutput, 10);
+			gotoxy(7, _y*2+5); printf(">  ");
+			gotoxy(10, _y*2+5);	printf(Picture[_y]);
+		}
+	}
+	system("cls");
+	Intranh(Bitmap[_y], 0);
+}
+
 void Multi()
 {
+	system("color E");
 	system("cls");
-	printf("Multi");
+	gotoxy(46, 1); printf("%c%c%c%c%c%c%c%c%c%c%c%c%c%c", 201, 205, 205, 205, 205, 205, 205, 205, 205, 205, 205, 205, 205, 187);
+	gotoxy(46, 2); printf("%c List  Game %c", 186, 186);
+	gotoxy(46, 3); printf("%c%c%c%c%c%c%c%c%c%c%c%c%c%c", 200, 205, 205, 205, 205, 205, 205, 205, 205, 205, 205, 205, 205, 188);
+	gotoxy(39, 20); printf("   G a m e  M o d e  # 2");
+	SetConsoleTextAttribute(hConsoleOutput, 10);
+	gotoxy(39, 15); printf(">  G a m e  M o d e  # 1");
+	int k, _y=0;
+	while(true)
+	{
+		k = GetKeyButton();
+		if(k==5) break;
+		else if(k==-1) return;
+		else if(k==1 || k==3)
+		{
+			SetConsoleTextAttribute(hConsoleOutput, 14);
+			gotoxy(39, _y*5+15); printf("   G a m e  M o d e  # %d", _y+1);
+			_y=1-_y;
+			SetConsoleTextAttribute(hConsoleOutput, 10);
+			gotoxy(39, _y*5+15); printf(">  G a m e  M o d e  # %d", _y+1);
+		}
+	}
+	if(_y==1) ChooseColor();
+	else ChoosePicture();
 }
 
 void StartGame()
@@ -236,7 +376,11 @@ void StartGame()
 
 	}
 	if(kk==-1) return;
-	if(__y==0) Single();
+	if(__y==0)
+	{
+		ChoosePicture();
+		Single();
+	}
 	else Multi();
 }
 
